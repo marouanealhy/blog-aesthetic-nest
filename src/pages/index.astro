@@ -1,0 +1,632 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import CategoryPills from '../components/CategoryPills.astro';
+import ShopTheLook from '../components/ShopTheLook.astro';
+import Newsletter from '../components/Newsletter.astro';
+import PinterestButton from '../components/PinterestButton.astro';
+
+// Fetch all posts and sort by pubDate desc
+const allPosts = await getCollection('blog');
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Featured post and remaining posts
+const featuredPost = sortedPosts.find(p => p.data.featured) || sortedPosts[0];
+const gridPosts = sortedPosts;
+
+// Handpicked Amazon decor items for the homepage "Shop The Edit"
+const homepageAffiliateItems = [
+  {
+    id: "linen-throw",
+    name: "Washed French Linen Waffle Throw Blanket in Oatmeal",
+    brand: "Linenwalas",
+    price: "$49.99",
+    rating: "4.8",
+    imageUrl: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=600&q=80",
+    altText: "Oatmeal French linen waffle throw",
+    affiliateUrl: "https://amazon.com/dp/B08XYZ1234?tag=aestheticnest-20",
+    badge: "Editor's Choice",
+    prime: true,
+  },
+  {
+    id: "wood-tray",
+    name: "Round Reclaimed Pine Footed Centerpiece Tray",
+    brand: "Creative Co-Op",
+    price: "$38.50",
+    rating: "4.9",
+    imageUrl: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=600&q=80",
+    altText: "Handcrafted reclaimed wood riser tray",
+    affiliateUrl: "https://amazon.com/dp/B07ABC5678?tag=aestheticnest-20",
+    badge: "Amazon's Choice",
+    prime: true,
+  },
+  {
+    id: "sculptural-mills",
+    name: "Bottle-Style Matte Scandinavian Salt & Pepper Grinders",
+    brand: "Menu Design",
+    price: "$45.00",
+    rating: "4.8",
+    imageUrl: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=600&q=80",
+    altText: "Minimalist Scandinavian salt and pepper mills",
+    affiliateUrl: "https://amazon.com/dp/B07MILLS22?tag=aestheticnest-20",
+    badge: "Trending",
+    prime: true,
+  },
+  {
+    id: "brass-sconce",
+    name: "Modern Brushed Brass Dimmable Hardwired Wall Sconce",
+    brand: "Globe Electric",
+    price: "$54.99",
+    rating: "4.8",
+    imageUrl: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
+    altText: "Brushed antique brass bedroom reading sconce",
+    affiliateUrl: "https://amazon.com/dp/B07BRASS33?tag=aestheticnest-20",
+    badge: "Top Rated",
+    prime: true,
+  }
+];
+
+// 4 Core category visual cards
+const categoryCards = [
+  {
+    title: "Coastal Farmhouse Living Rooms",
+    slug: "coastal-farmhouse",
+    image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&h=1500&q=80",
+    description: "Slub linen, weathered natural oak, chunky jute rugs, and airy Mediterranean light.",
+    count: sortedPosts.filter(p => p.data.category === 'coastal-farmhouse').length,
+  },
+  {
+    title: "Luxury Bedrooms",
+    slug: "luxury-bedrooms",
+    image: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1000&h=1500&q=80",
+    description: "Crisp boutique hotel percale, dimmable brass sconces, and sculpted travertine stone.",
+    count: sortedPosts.filter(p => p.data.category === 'luxury-bedrooms').length,
+  },
+  {
+    title: "Wardrobe & Vanity Combos",
+    slug: "wardrobe-vanity",
+    image: "https://images.unsplash.com/photo-1558997519-83ea9252def8?auto=format&fit=crop&w=1000&h=1500&q=80",
+    description: "Built-in dressing nooks, illuminated arched mirrors, and velvet storage seating.",
+    count: sortedPosts.filter(p => p.data.category === 'wardrobe-vanity').length,
+  },
+  {
+    title: "Modern Kitchens",
+    slug: "modern-kitchens",
+    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&h=1500&q=80",
+    description: "Warm minimalist marble surfaces, end-grain chopping boards, and amber glass details.",
+    count: sortedPosts.filter(p => p.data.category === 'modern-kitchens').length,
+  },
+];
+---
+
+<BaseLayout
+  title="Aesthetic Nest | Curated Home Decor & Interior Design Blog"
+  description="Discover timeless interior design ideas, coastal farmhouse living rooms, quiet luxury bedrooms, custom wardrobe vanities, and shoppable Amazon home decor."
+>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container hero-container">
+      <div class="hero-text-wrap">
+        <span class="eyebrow">The Editorial Room</span>
+        <h1 class="hero-title">The Art of Curated Living & Intentional Spaces</h1>
+        <p class="hero-description">
+          Aesthetic Nest is an interior design journal exploring tactile materials, timeless color palettes, and shoppable decor finds to transform every corner of your home.
+        </p>
+
+        <!-- Category Filter Pills -->
+        <div class="hero-pills">
+          <CategoryPills />
+        </div>
+      </div>
+
+      <!-- Hero Featured Spotlight Card -->
+      {featuredPost && (
+        <div class="hero-spotlight">
+          <div class="spotlight-card">
+            <div class="spotlight-image-wrap pinterest-frame">
+              <img 
+                src={featuredPost.data.pinterestImage || featuredPost.data.heroImage} 
+                alt={featuredPost.data.heroAlt}
+                width="1000" 
+                height="1500" 
+                fetchpriority="high"
+              />
+              <div class="spotlight-pin-btn">
+                <PinterestButton 
+                  url={`https://aestheticnest.com/blog/${featuredPost.slug}`}
+                  media={featuredPost.data.pinterestImage || featuredPost.data.heroImage}
+                  description={`${featuredPost.data.title} - Aesthetic Nest`}
+                  variant="overlay"
+                  label="Pin Idea"
+                />
+              </div>
+              <span class="spotlight-badge">Featured Story</span>
+            </div>
+            
+            <div class="spotlight-details">
+              <span class="eyebrow">{featuredPost.data.categoryLabel}</span>
+              <h2 class="spotlight-heading">
+                <a href={`/blog/${featuredPost.slug}`}>{featuredPost.data.title}</a>
+              </h2>
+              <p class="spotlight-excerpt">{featuredPost.data.description}</p>
+              
+              <div class="spotlight-action">
+                <a href={`/blog/${featuredPost.slug}`} class="btn-primary">
+                  <span>Read Full Article</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+                <span class="read-time-pill">{featuredPost.data.readTime}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Featured Posts Grid Section -->
+  <section class="section-spacing posts-grid-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <span class="eyebrow">Latest Journal Entries</span>
+          <h2 class="section-heading">Curated Spaces & Styling Guides</h2>
+        </div>
+        <p class="section-subtext">
+          Every story features Pinterest-ready 1000×1500 photography and verified Amazon decor selections.
+        </p>
+      </div>
+
+      <!-- Main Blog Posts Grid -->
+      <div class="blog-posts-grid">
+        {gridPosts.map((post) => (
+          <PostCard 
+            slug={post.slug}
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            category={post.data.category}
+            categoryLabel={post.data.categoryLabel}
+            heroImage={post.data.heroImage}
+            heroAlt={post.data.heroAlt}
+            pinterestImage={post.data.pinterestImage}
+            readTime={post.data.readTime}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Explore by Space (Categories Showcase) -->
+  <section class="categories-showcase-section section-spacing">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="eyebrow">Browse by Room</span>
+        <h2 class="section-heading">Four Foundational Sanctuaries</h2>
+        <p class="section-subtext">Explore specialized decor guides tailored to each environment in your home.</p>
+      </div>
+
+      <div class="categories-card-grid">
+        {categoryCards.map((cat) => (
+          <a href={`/categories/${cat.slug}`} class="category-room-card">
+            <div class="room-card-img-wrap pinterest-frame">
+              <img src={cat.image} alt={cat.title} loading="lazy" width="1000" height="1500" />
+              <div class="room-card-overlay">
+                <span class="room-count">{cat.count} {cat.count === 1 ? 'Guide' : 'Guides'}</span>
+                <h3 class="room-card-title">{cat.title}</h3>
+                <p class="room-card-desc">{cat.description}</p>
+                <span class="room-explore-btn">Explore Space →</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop The Edit (Amazon Affiliate Section) -->
+  <section class="shop-edit-section">
+    <div class="container">
+      <ShopTheLook 
+        title="The Amazon Edit: Current Interior Obsessions"
+        subtitle="Our editors' hand-selected decorative pieces available with fast Prime delivery."
+        items={homepageAffiliateItems}
+      />
+    </div>
+  </section>
+
+  <!-- Pinterest Moodboard Spotlight -->
+  <section class="pinterest-spotlight-section section-spacing">
+    <div class="container">
+      <div class="pinterest-banner">
+        <div class="pinterest-banner-text">
+          <div class="p-icon-badge">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.546.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
+            </svg>
+            <span>Pinterest Ready (1000×1500)</span>
+          </div>
+          <h2>Save These Spaces to Your Dream Boards</h2>
+          <p>
+            All imagery across Aesthetic Nest is rendered in high-resolution 2:3 vertical aspect ratio, ready to pin straight to your home aesthetic boards with rich metadata.
+          </p>
+          <a href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" class="btn-primary pinterest-main-btn">
+            <span>Follow @AestheticNest on Pinterest</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+
+        <div class="pinterest-banner-gallery">
+          <div class="p-card-thumb">
+            <img src={gridPosts[0]?.data.pinterestImage} alt="Pinterest Pin 1" />
+          </div>
+          <div class="p-card-thumb elevated">
+            <img src={gridPosts[1]?.data.pinterestImage} alt="Pinterest Pin 2" />
+          </div>
+          <div class="p-card-thumb">
+            <img src={gridPosts[2]?.data.pinterestImage} alt="Pinterest Pin 3" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Signup -->
+  <div class="container">
+    <Newsletter />
+  </div>
+</BaseLayout>
+
+<style>
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(180deg, #F6F1EA 0%, #FAF8F5 100%);
+    border-bottom: 1px solid var(--color-border);
+    padding: 3.5rem 0 4rem;
+  }
+
+  .hero-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .hero-text-wrap {
+    max-width: 820px;
+  }
+
+  .hero-title {
+    margin-top: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-description {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .hero-pills {
+    margin-top: 0.5rem;
+  }
+
+  /* Spotlight Feature Card */
+  .spotlight-card {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .spotlight-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-accent-sand);
+  }
+
+  .spotlight-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    max-height: 480px;
+    background-color: var(--color-surface-subtle);
+  }
+
+  .spotlight-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .spotlight-pin-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 5;
+  }
+
+  .spotlight-badge {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    background-color: var(--color-accent-terracotta);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+  }
+
+  .spotlight-details {
+    padding: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .spotlight-heading {
+    font-size: clamp(1.6rem, 2.5vw, 2.35rem);
+    line-height: 1.25;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .spotlight-heading a:hover {
+    color: var(--color-accent-terracotta);
+  }
+
+  .spotlight-excerpt {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  .spotlight-action {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .read-time-pill {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Section Headers */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2.75rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .section-header.text-center {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .section-heading {
+    margin-top: 0.25rem;
+  }
+
+  .section-subtext {
+    max-width: 440px;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Blog Posts Grid */
+  .blog-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem;
+  }
+
+  /* Categories Room Showcase */
+  .categories-showcase-section {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border-light);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .categories-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .category-room-card {
+    display: block;
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .category-room-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .room-card-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+  }
+
+  .room-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-smooth);
+  }
+
+  .category-room-card:hover .room-card-img-wrap img {
+    transform: scale(1.05);
+  }
+
+  .room-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(20, 18, 16, 0.1) 0%, rgba(20, 18, 16, 0.85) 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.75rem;
+  }
+
+  .room-count {
+    font-size: 0.725rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #E2DACF;
+    margin-bottom: 0.25rem;
+  }
+
+  .room-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    line-height: 1.25;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+  }
+
+  .room-card-desc {
+    font-size: 0.825rem;
+    line-height: 1.45;
+    color: #E2DACF;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .room-explore-btn {
+    font-size: 0.775rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #FAF8F5;
+  }
+
+  /* Pinterest Banner Section */
+  .pinterest-banner {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    background: linear-gradient(135deg, #FAF4F0 0%, #F5EAE4 100%);
+    border: 1px solid rgba(189, 30, 45, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 3.5rem 3rem;
+  }
+
+  .p-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-pinterest);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .pinterest-banner-text h2 {
+    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    margin-bottom: 1rem;
+  }
+
+  .pinterest-banner-text p {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  .pinterest-main-btn {
+    background-color: var(--color-pinterest);
+  }
+
+  .pinterest-main-btn:hover {
+    background-color: var(--color-pinterest-hover);
+  }
+
+  .pinterest-banner-gallery {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .p-card-thumb {
+    width: 30%;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .p-card-thumb.elevated {
+    transform: translateY(-16px);
+    box-shadow: var(--shadow-lg);
+    width: 34%;
+  }
+
+  .p-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 900px) {
+    .spotlight-card {
+      grid-template-columns: 1fr;
+    }
+    .spotlight-image-wrap {
+      max-height: 380px;
+    }
+    .spotlight-details {
+      padding: 2rem;
+    }
+    .pinterest-banner {
+      grid-template-columns: 1fr;
+      padding: 2.5rem 1.5rem;
+    }
+    .pinterest-banner-gallery {
+      margin-top: 1rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .blog-posts-grid {
+      grid-template-columns: 1fr;
+    }
+    .categories-card-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

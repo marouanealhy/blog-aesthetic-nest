@@ -1,0 +1,85 @@
+---
+interface Props {
+  url?: string;
+  media: string;
+  description: string;
+  variant?: 'overlay' | 'inline' | 'floating';
+  label?: string;
+}
+
+const {
+  url = Astro.url.href,
+  media,
+  description,
+  variant = 'inline',
+  label = 'Save to Pinterest'
+} = Astro.props;
+
+const pinterestShareUrl = `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(media)}&description=${encodeURIComponent(description)}`;
+---
+
+<a 
+  href={pinterestShareUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  class={`pinterest-btn ${variant}`}
+  title="Save this idea on Pinterest"
+  aria-label="Save this image to Pinterest"
+>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.546.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
+  </svg>
+  <span>{label}</span>
+</a>
+
+<style>
+  .pinterest-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--color-pinterest);
+    color: #ffffff !important;
+    border-radius: var(--radius-full);
+    font-size: 0.825rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none !important;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 12px rgba(189, 30, 45, 0.25);
+    z-index: 5;
+  }
+
+  .pinterest-btn:hover {
+    background-color: var(--color-pinterest-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(189, 30, 45, 0.35);
+  }
+
+  .pinterest-btn.inline {
+    padding: 0.55rem 1.1rem;
+    margin: 1.25rem 0;
+  }
+
+  .pinterest-btn.overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.45rem 0.85rem;
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  :global(.pinterest-container:hover) .pinterest-btn.overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .pinterest-btn.floating {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 0.75rem 1.25rem;
+    z-index: 40;
+    box-shadow: var(--shadow-lg);
+  }
+</style>

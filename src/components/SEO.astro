@@ -1,0 +1,111 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  article?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  category?: string;
+  canonicalUrl?: string;
+}
+
+const {
+  title = "Aesthetic Nest | Curated Home Decor & Interior Inspiration",
+  description = "Aesthetic Nest is your sanctuary for curated home decor, coastal farmhouse styling, quiet luxury bedrooms, custom wardrobe vanities, and warm minimalist kitchens.",
+  image = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1000&h=1500&q=80",
+  imageAlt = "Aesthetic Nest interior design editorial",
+  article = false,
+  publishedTime,
+  modifiedTime,
+  category,
+  canonicalUrl = Astro.url.href
+} = Astro.props;
+
+const siteName = "Aesthetic Nest";
+const formattedTitle = title.includes(siteName) ? title : `${title} — ${siteName}`;
+
+// Schema.org structured data
+const schemaData = article ? {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": title,
+  "description": description,
+  "image": [image],
+  "datePublished": publishedTime,
+  "dateModified": modifiedTime || publishedTime,
+  "author": {
+    "@type": "Person",
+    "name": "Elena Vance",
+    "jobTitle": "Lead Interior Stylist"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": siteName,
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://aestheticnest.com/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  },
+  "articleSection": category
+} : {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": siteName,
+  "url": Astro.site?.toString() || "https://aestheticnest.com",
+  "description": description,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://aestheticnest.com/?s={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Primary Meta Tags -->
+<title>{formattedTitle}</title>
+<meta name="title" content={formattedTitle} />
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta name="robots" content="index, follow" />
+
+<!-- Open Graph / Facebook / Pinterest -->
+<meta property="og:type" content={article ? "article" : "website"} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={formattedTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={image} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta property="og:image:width" content="1000" />
+<meta property="og:image:height" content="1500" />
+<meta property="og:site_name" content={siteName} />
+
+{article && publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{article && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+{article && category && <meta property="article:section" content={category} />}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:title" content={formattedTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+<!-- Pinterest Rich Pins -->
+<meta name="pinterest-rich-pin" content="true" />
+<meta name="pinterest:card" content="summary_large_image" />
+
+<!-- JSON-LD Structured Schema -->
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

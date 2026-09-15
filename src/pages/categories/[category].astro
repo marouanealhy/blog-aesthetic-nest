@@ -1,0 +1,214 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import CategoryPills from '../../components/CategoryPills.astro';
+import Newsletter from '../../components/Newsletter.astro';
+
+export async function getStaticPaths() {
+  const categoryMetadata = {
+    'coastal-farmhouse': {
+      title: 'Coastal Farmhouse Living Rooms',
+      description: 'Sun-drenched, airy retreats blending organic linen textures, reclaimed oak, and relaxed coastal ease.',
+      heroImage: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80',
+    },
+    'luxury-bedrooms': {
+      title: 'Luxury Bedrooms',
+      description: 'Understated quiet luxury, crisp long-staple hotel linens, ambient brass lighting, and sculpted stone accents.',
+      heroImage: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
+    },
+    'wardrobe-vanity': {
+      title: 'Wardrobe & Vanity Combos',
+      description: 'Seamless integrated dressing stations, arched vanity mirrors, and clever storage ideas for high-fashion everyday rituals.',
+      heroImage: 'https://images.unsplash.com/photo-1558997519-83ea9252def8?auto=format&fit=crop&w=1200&q=80',
+    },
+    'modern-kitchens': {
+      title: 'Modern Kitchens',
+      description: 'Warm minimalist cooking spaces celebrating architectural marble, end-grain cutting boards, and sculptural everyday essentials.',
+      heroImage: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
+    },
+  };
+
+  const allPosts = await getCollection('blog');
+  const categories = Object.keys(categoryMetadata);
+
+  return categories.map((catKey) => {
+    const filteredPosts = allPosts
+      .filter((post) => post.data.category === catKey)
+      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+    return {
+      params: { category: catKey },
+      props: {
+        categoryKey: catKey,
+        meta: categoryMetadata[catKey as keyof typeof categoryMetadata],
+        posts: filteredPosts,
+      },
+    };
+  });
+}
+
+const { categoryKey, meta, posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`${meta.title} — Curated Design Ideas`}
+  description={meta.description}
+  image={meta.heroImage}
+  category={meta.title}
+>
+  <!-- Category Hero Banner -->
+  <section class="category-hero">
+    <div class="container category-hero-inner">
+      <div class="category-breadcrumbs">
+        <a href="/">Home</a>
+        <span class="sep">/</span>
+        <span>Categories</span>
+        <span class="sep">/</span>
+        <span class="current">{meta.title}</span>
+      </div>
+
+      <span class="eyebrow">Curated Collection</span>
+      <h1 class="cat-page-title">{meta.title}</h1>
+      <p class="cat-page-description">{meta.description}</p>
+      
+      <div class="category-filter-strip">
+        <CategoryPills activeCategory={categoryKey} />
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Posts Grid -->
+  <section class="category-posts-section section-spacing">
+    <div class="container">
+      <div class="posts-count-bar">
+        <span class="posts-count">{posts.length} {posts.length === 1 ? 'Article' : 'Articles'} found</span>
+        <span class="pinterest-hint">💡 All post images are formatted 1000×1500 for Pinterest saving</span>
+      </div>
+
+      {posts.length > 0 ? (
+        <div class="category-grid">
+          {posts.map((post) => (
+            <PostCard 
+              slug={post.slug}
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              category={post.data.category}
+              categoryLabel={post.data.categoryLabel}
+              heroImage={post.data.heroImage}
+              heroAlt={post.data.heroAlt}
+              pinterestImage={post.data.pinterestImage}
+              readTime={post.data.readTime}
+              featured={post.data.featured}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>More curated stories for this space are coming to next Sunday's edit.</p>
+          <a href="/" class="btn-primary">Explore All Stories</a>
+        </div>
+      )}
+
+      <!-- Category Newsletter -->
+      <Newsletter 
+        title={`Love ${meta.title}?`}
+        subtitle="Get our latest room reveals and Amazon shopping guides delivered straight to your inbox."
+      />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .category-hero {
+    background: linear-gradient(180deg, #F5EFE8 0%, #FAF8F5 100%);
+    border-bottom: 1px solid var(--color-border);
+    padding: 3.5rem 0 3rem;
+  }
+
+  .category-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .category-breadcrumbs a:hover {
+    color: var(--color-accent-terracotta);
+  }
+
+  .category-breadcrumbs .sep {
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  .category-breadcrumbs .current {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  .cat-page-title {
+    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    max-width: 800px;
+  }
+
+  .cat-page-description {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    max-width: 680px;
+    line-height: 1.65;
+    margin-bottom: 2.25rem;
+  }
+
+  .category-filter-strip {
+    margin-top: 1.5rem;
+  }
+
+  .posts-count-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 2.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .pinterest-hint {
+    color: var(--color-pinterest);
+    font-weight: 500;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: var(--color-surface);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .empty-state p {
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .category-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

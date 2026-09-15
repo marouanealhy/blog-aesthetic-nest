@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found | Aesthetic Nest"
+  description="The room you are looking for has been moved or does not exist."
+>
+  <div class="container not-found-page section-spacing">
+    <span class="eyebrow">404 Error</span>
+    <h1 class="not-found-title">This Space Has Been Redesigned</h1>
+    <p class="not-found-desc">
+      The interior guide or page you are looking for might have moved, been archived, or had its URL updated.
+    </p>
+
+    <div class="not-found-actions">
+      <a href="/" class="btn-primary">Return to Homepage</a>
+      <a href="/categories/coastal-farmhouse" class="btn-secondary">Browse Living Rooms</a>
+      <a href="/categories/luxury-bedrooms" class="btn-secondary">Browse Bedrooms</a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found-page {
+    text-align: center;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+    max-width: 600px;
+  }
+
+  .not-found-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-top: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .not-found-desc {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    margin-bottom: 2.5rem;
+  }
+
+  .not-found-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+</style>

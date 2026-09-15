@@ -1,0 +1,456 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import AffiliateNotice from '../components/AffiliateNotice.astro';
+import PinterestButton from '../components/PinterestButton.astro';
+import ShopTheLook from '../components/ShopTheLook.astro';
+import Newsletter from '../components/Newsletter.astro';
+
+interface Props {
+  post: {
+    slug: string;
+    data: {
+      title: string;
+      description: string;
+      pubDate: Date;
+      updatedDate?: Date;
+      author: string;
+      authorRole: string;
+      authorAvatar: string;
+      category: string;
+      categoryLabel: string;
+      heroImage: string;
+      heroAlt: string;
+      pinterestImage: string;
+      pinterestPinTitle?: string;
+      readTime: string;
+      tags: string[];
+      affiliateDisclosure: boolean;
+      affiliateProducts?: Array<any>;
+    };
+  };
+}
+
+const { post } = Astro.props;
+const { data } = post;
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+}).format(data.pubDate);
+
+const postUrl = `https://aestheticnest.com/blog/${post.slug}`;
+---
+
+<BaseLayout 
+  title={data.title}
+  description={data.description}
+  image={data.pinterestImage || data.heroImage}
+  imageAlt={data.heroAlt}
+  article={true}
+  publishedTime={data.pubDate.toISOString()}
+  modifiedTime={data.updatedDate ? data.updatedDate.toISOString() : undefined}
+  category={data.categoryLabel}
+>
+  <article class="blog-post-page">
+    
+    <!-- Article Header -->
+    <header class="post-header container-narrow">
+      <div class="header-breadcrumbs">
+        <a href="/">Home</a>
+        <span class="sep">/</span>
+        <a href={`/categories/${data.category}`}>{data.categoryLabel}</a>
+      </div>
+
+      <a href={`/categories/${data.category}`} class="category-pill post-cat-badge">
+        {data.categoryLabel}
+      </a>
+
+      <h1 class="article-title">{data.title}</h1>
+      <p class="article-subtitle">{data.description}</p>
+
+      <!-- Author & Meta Info -->
+      <div class="author-meta-strip">
+        <div class="author-info">
+          <img src={data.authorAvatar} alt={data.author} class="author-thumb" />
+          <div>
+            <span class="author-name">{data.author}</span>
+            <span class="author-title">{data.authorRole}</span>
+          </div>
+        </div>
+
+        <div class="meta-details">
+          <span>{formattedDate}</span>
+          <span class="dot">•</span>
+          <span>{data.readTime}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Visual Hero (Optimized for Pinterest 1000x1500) -->
+    <div class="hero-visual-container container-narrow">
+      <div class="pinterest-container main-hero-frame">
+        <img 
+          src={data.pinterestImage || data.heroImage} 
+          alt={data.heroAlt} 
+          width="1000" 
+          height="1500" 
+          fetchpriority="high"
+        />
+        <div class="pinterest-badge-overlay">
+          <PinterestButton 
+            url={postUrl}
+            media={data.pinterestImage || data.heroImage}
+            description={`${data.title} — Curated on Aesthetic Nest`}
+            variant="inline"
+            label="Save to Pinterest (1000×1500)"
+          />
+        </div>
+      </div>
+      <p class="image-caption">
+        {data.heroAlt} — <span class="pin-hint">Hover or tap above to save this pin to your Pinterest board.</span>
+      </p>
+    </div>
+
+    <!-- Content Body -->
+    <div class="container-narrow">
+      {data.affiliateDisclosure && <AffiliateNotice />}
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <!-- Shoppable Look Section if items defined -->
+      {data.affiliateProducts && data.affiliateProducts.length > 0 && (
+        <ShopTheLook items={data.affiliateProducts} />
+      )}
+
+      <!-- Tags -->
+      {data.tags && data.tags.length > 0 && (
+        <div class="post-tags-container">
+          <span class="tags-label">Related Topics:</span>
+          <div class="tags-list">
+            {data.tags.map((tag: string) => (
+              <span class="tag-pill">#{tag}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Author Bio Box -->
+      <div class="author-bio-card">
+        <img src={data.authorAvatar} alt={data.author} class="bio-avatar" />
+        <div class="bio-details">
+          <span class="bio-eyebrow">Written by</span>
+          <h4 class="bio-name">{data.author}</h4>
+          <p class="bio-desc">
+            Elena is the creative director and founder of Aesthetic Nest. With a background in architectural interiors and a passion for tactile, warm minimal spaces, she spends her weekends scouting vintage pottery and hunting for timeless decor gems.
+          </p>
+        </div>
+      </div>
+
+      <!-- Pinterest Pin Card Banner -->
+      <div class="pin-banner-card">
+        <div class="pin-banner-text">
+          <span class="eyebrow">Pin For Later</span>
+          <h3>Love this design idea?</h3>
+          <p>Save it to your Pinterest interior boards so you have it handy when you style your space.</p>
+          <PinterestButton 
+            url={postUrl}
+            media={data.pinterestImage || data.heroImage}
+            description={`${data.title} — Save this pin on Aesthetic Nest`}
+            variant="inline"
+            label="Save to Pinterest"
+          />
+        </div>
+        <div class="pin-banner-preview">
+          <img src={data.pinterestImage || data.heroImage} alt="Pinterest preview" width="200" height="300" />
+        </div>
+      </div>
+
+      <!-- Newsletter subscription -->
+      <Newsletter 
+        title="Love this aesthetic?" 
+        subtitle="Subscribe to receive weekly room edits, shoppable Amazon decor links, and new moodboards."
+      />
+
+      <!-- Back to Archive -->
+      <div class="back-link-wrap">
+        <a href={`/categories/${data.category}`} class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>More in {data.categoryLabel}</span>
+        </a>
+      </div>
+
+    </div>
+
+  </article>
+</BaseLayout>
+
+<style>
+  .blog-post-page {
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
+  }
+
+  .header-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .header-breadcrumbs a:hover {
+    color: var(--color-accent-terracotta);
+  }
+
+  .header-breadcrumbs .sep {
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  .post-cat-badge {
+    margin-bottom: 1.25rem;
+  }
+
+  .article-title {
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .article-subtitle {
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+
+  .author-meta-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
+    border-top: 1px solid var(--color-border-light);
+    border-bottom: 1px solid var(--color-border-light);
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .author-info {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .author-thumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .author-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.925rem;
+    color: var(--color-text-primary);
+  }
+
+  .author-title {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .meta-details {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .dot {
+    font-size: 0.6rem;
+  }
+
+  .hero-visual-container {
+    margin-bottom: 3.5rem;
+  }
+
+  .main-hero-frame {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    aspect-ratio: 2 / 3; /* Exact 1000 x 1500 vertical Pinterest standard */
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-surface-subtle);
+    box-shadow: var(--shadow-md);
+  }
+
+  .main-hero-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pinterest-badge-overlay {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 10;
+  }
+
+  .image-caption {
+    text-align: center;
+    font-size: 0.825rem;
+    color: var(--color-text-muted);
+    margin-top: 0.85rem;
+  }
+
+  .pin-hint {
+    color: var(--color-pinterest);
+    font-weight: 500;
+  }
+
+  .post-tags-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+  }
+
+  .tags-label {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag-pill {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    background-color: var(--color-surface-subtle);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-full);
+  }
+
+  .author-bio-card {
+    display: flex;
+    gap: 1.5rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    margin: 3.5rem 0;
+    align-items: center;
+  }
+
+  .bio-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .bio-eyebrow {
+    font-size: 0.725rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-accent-terracotta);
+    font-weight: 600;
+  }
+
+  .bio-name {
+    font-size: 1.25rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .bio-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .pin-banner-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #FEF5F5 0%, #FAF0EE 100%);
+    border: 1px solid rgba(189, 30, 45, 0.15);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    margin: 3rem 0;
+    gap: 2rem;
+  }
+
+  .pin-banner-text h3 {
+    font-size: 1.6rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pin-banner-text p {
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    color: var(--color-text-secondary);
+  }
+
+  .pin-banner-preview {
+    width: 140px;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+  }
+
+  .pin-banner-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .back-link-wrap {
+    margin-top: 3.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (max-width: 650px) {
+    .author-bio-card {
+      flex-direction: column;
+      text-align: center;
+    }
+    .pin-banner-card {
+      flex-direction: column;
+      text-align: center;
+    }
+    .pin-banner-preview {
+      display: none;
+    }
+  }
+</style>

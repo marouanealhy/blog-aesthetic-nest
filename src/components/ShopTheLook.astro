@@ -1,0 +1,249 @@
+---
+interface ProductItem {
+  id: string;
+  name: string;
+  brand?: string;
+  price: string;
+  rating?: string;
+  imageUrl: string;
+  altText?: string;
+  affiliateUrl: string;
+  badge?: string;
+  prime?: boolean;
+}
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  items: ProductItem[];
+}
+
+const {
+  title = "Shop The Look",
+  subtitle = "Curated decor pieces inspired by this space on Amazon",
+  items = []
+} = Astro.props;
+---
+
+<section class="shop-the-look-wrapper">
+  <div class="stl-header">
+    <div class="stl-header-text">
+      <span class="eyebrow">Curated Amazon Finds</span>
+      <h3 class="stl-title">{title}</h3>
+      <p class="stl-subtitle">{subtitle}</p>
+    </div>
+    <div class="stl-affiliate-badge">
+      <span class="affiliate-badge">Sponsored Links</span>
+    </div>
+  </div>
+
+  <div class="stl-grid">
+    {items.map((item) => (
+      <div class="stl-card">
+        {item.badge && <span class="stl-item-badge">{item.badge}</span>}
+        <div class="stl-img-container">
+          <img src={item.imageUrl} alt={item.altText || item.name} loading="lazy" />
+        </div>
+        <div class="stl-card-info">
+          {item.brand && <span class="stl-brand">{item.brand}</span>}
+          <h4 class="stl-item-name">{item.name}</h4>
+          
+          <div class="stl-price-row">
+            <span class="stl-price">{item.price}</span>
+            {item.prime && <span class="stl-prime-pill">Prime</span>}
+          </div>
+
+          <a 
+            href={item.affiliateUrl} 
+            target="_blank" 
+            rel="sponsored nofollow noopener noreferrer"
+            class="stl-buy-btn"
+          >
+            <span>View on Amazon</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .shop-the-look-wrapper {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2rem;
+    margin: 3.5rem 0;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .stl-title {
+    font-size: 1.65rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .stl-subtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .stl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stl-card {
+    position: relative;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .stl-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-accent-sand);
+  }
+
+  .stl-item-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background-color: var(--color-text-primary);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-full);
+    z-index: 2;
+  }
+
+  .stl-img-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #ffffff;
+    overflow: hidden;
+    padding: 1rem;
+  }
+
+  .stl-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform var(--transition-smooth);
+  }
+
+  .stl-card:hover .stl-img-container img {
+    transform: scale(1.05);
+  }
+
+  .stl-card-info {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .stl-brand {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .stl-item-name {
+    font-family: var(--font-sans);
+    font-size: 0.925rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-text-primary);
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .stl-price-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    margin-top: auto;
+  }
+
+  .stl-price {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  .stl-prime-pill {
+    background-color: #00A8E1;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    font-style: italic;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+  }
+
+  .stl-buy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background-color: #ffffff;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.55rem;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+  }
+
+  .stl-buy-btn:hover {
+    background-color: #FF9900;
+    border-color: #FF9900;
+    color: #111111;
+  }
+
+  @media (max-width: 600px) {
+    .shop-the-look-wrapper {
+      padding: 1.5rem 1rem;
+    }
+    .stl-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>

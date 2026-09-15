@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Affiliate & Editorial Disclosure | Aesthetic Nest"
+  description="Transparency and reader trust are paramount. Read our Amazon Associates affiliate policy, editorial standards, and privacy disclosures."
+>
+  <div class="disclosure-page container-narrow section-spacing">
+    <span class="eyebrow">Transparency & Trust</span>
+    <h1 class="page-title">Editorial & Affiliate Disclosure</h1>
+    <p class="intro-blurb">
+      At Aesthetic Nest, our commitment to authentic, elevated interior design guidance is our highest priority. We believe in complete transparency regarding how this publication operates and monetizes.
+    </p>
+
+    <div class="prose">
+      <h2>Amazon Associates Affiliate Disclosure</h2>
+      <p>
+        <strong>Aesthetic Nest is a participant in the Amazon Services LLC Associates Program</strong>, an affiliate advertising program designed to provide a means for websites to earn advertising fees by advertising and linking to Amazon.com and affiliated sites.
+      </p>
+      <p>
+        Throughout our articles, shopping edits, and product roundups, you will encounter links marked with <em>"Shop on Amazon"</em>, <em>"View on Amazon"</em>, or marked with a <span class="affiliate-badge">Sponsored</span> badge. When you click these links and make a purchase, we may receive a small commission at <strong>no additional cost to you</strong>.
+      </p>
+
+      <h2>Our Editorial Standards</h2>
+      <p>
+        We do not accept payment to write positive reviews. Products featured in our guides are selected based on:
+      </p>
+      <ul>
+        <li>Tactile material quality (e.g. linen, solid wood, natural marble, unlacquered brass)</li>
+        <li>Architectural and visual harmony with our core aesthetic values</li>
+        <li>Real customer review sentiment and durability feedback</li>
+        <li>Fair value and reliability of delivery</li>
+      </ul>
+
+      <blockquote id="editorial-oath">
+        "We never recommend an item solely because it offers an affiliate commission. If a piece doesn't meet our strict aesthetic and quality benchmarks, it does not appear on Aesthetic Nest."
+      </blockquote>
+
+      <h2 id="pinterest">Pinterest & Image Usage</h2>
+      <p>
+        We optimize our imagery for Pinterest sharing (1000×1500 vertical format) to help readers build dream interior moodboards. When saving pins from our site, original credit and destination links are preserved to ensure copyright integrity.
+      </p>
+
+      <h2 id="privacy">Privacy & Cookies</h2>
+      <p>
+        When you visit Aesthetic Nest, third-party partners (such as Amazon and analytics providers) may place cookies on your browser to track referral sales and session metrics. These cookies do not store personal identifiable information. You can disable cookies at any time via your browser settings.
+      </p>
+
+      <h2>Questions & Inquiries</h2>
+      <p>
+        If you have any questions regarding our affiliate partnerships, product selections, or brand collaborations, please reach out to our editorial team at <code>editorial@aestheticnest.com</code>.
+      </p>
+    </div>
+
+    <div class="back-home-wrap">
+      <a href="/" class="btn-primary">Return to Homepage</a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .disclosure-page {
+    padding-top: 3.5rem;
+  }
+
+  .page-title {
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .intro-blurb {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .back-home-wrap {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border-light);
+  }
+</style>

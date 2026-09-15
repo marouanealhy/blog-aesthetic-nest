@@ -1,0 +1,15 @@
+{
+  "name": "aesthetic-nest",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev --host",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.0",
+    "@astrojs/sitemap": "^3.2.1",
+    "astro": "^5.4.2"
+  }
+}
