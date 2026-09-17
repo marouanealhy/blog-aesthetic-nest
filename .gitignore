@@ -23,3 +23,6 @@ pnpm-debug.log*
 
 # Windows thumbnail cache
 Thumbs.db
+
+# Archives
+*.zip
