@@ -34,12 +34,12 @@ jobs:
         run: |
           RAW_SERVER="${{ secrets.FTP_SERVER }}"
           if [ -z "$RAW_SERVER" ]; then
-            RAW_SERVER="93.127.179.231"
+            RAW_SERVER="72.60.93.205"
           fi
           # Force IPv4 lookup (A record) to bypass GitHub runner IPv6 ENETUNREACH issues
           RESOLVED_IP=$(getent ahostsv4 "$RAW_SERVER" | head -n 1 | awk '{print $1}')
           if [ -z "$RESOLVED_IP" ]; then
-            RESOLVED_IP="93.127.179.231"
+            RESOLVED_IP="72.60.93.205"
           fi
           echo "Using IPv4 target: $RESOLVED_IP"
           echo "ftp_server=$RESOLVED_IP" >> "$GITHUB_OUTPUT"
