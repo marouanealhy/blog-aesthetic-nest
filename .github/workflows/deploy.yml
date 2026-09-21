@@ -10,6 +10,8 @@ jobs:
   build-and-deploy:
     name: Build and Deploy via FTP
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--dns-result-order=ipv4first"
 
     steps:
       - name: 📥 Checkout repository
@@ -27,19 +29,36 @@ jobs:
       - name: 🏗️ Build static site
         run: npm run build
 
+      - name: 🌐 Resolve FTP Server to IPv4
+        id: resolve-dns
+        run: |
+          RAW_SERVER="${{ secrets.FTP_SERVER }}"
+          if [ -z "$RAW_SERVER" ]; then
+            RAW_SERVER="93.127.179.231"
+          fi
+          # Force IPv4 lookup (A record) to bypass GitHub runner IPv6 ENETUNREACH issues
+          RESOLVED_IP=$(getent ahostsv4 "$RAW_SERVER" | head -n 1 | awk '{print $1}')
+          if [ -z "$RESOLVED_IP" ]; then
+            RESOLVED_IP="93.127.179.231"
+          fi
+          echo "Using IPv4 target: $RESOLVED_IP"
+          echo "ftp_server=$RESOLVED_IP" >> "$GITHUB_OUTPUT"
+
       - name: 🚀 Sync files to Hostinger via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          server: ${{ steps.resolve-dns.outputs.ftp_server }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
+          security: loose
           local-dir: ./dist/
           server-dir: ./public_html/
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
+
 
 
